@@ -60,7 +60,7 @@ export class AppComponent {
 	private tasks : Task[] = [];
 
 	private selected : Task = null;
-	private emptyTask : Task = new Task();
+	private emptyTask : Task = new Task('');
 
 	titleFocused : boolean = false;
 
