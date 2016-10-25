@@ -1,4 +1,4 @@
-import { Component, Input } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 
 import { Timer } from './timer.component';
 
@@ -11,6 +11,25 @@ class Task {
 	constructor(title: string) {
 		this.title = title;
 		this.timer = new Timer();
+	}
+
+	public serialize() : Object {
+		return { title: this.title, description: this.description, timer: this.timer.serialize() };
+	}
+
+	public static deserialize(d: any) : Task {
+		let t = new Task('');
+
+		if (d.title)
+			t.title = d.title;
+
+		if (d.description)
+			t.description = d.description;
+
+		if (d.timer)
+			t.timer = Timer.deserialize(d.timer);
+
+		return t;
 	}
 }
 
@@ -53,7 +72,7 @@ class TaskDetailComponent {
 	directives: [TaskDetailComponent],
 	styles: ['.list-group-item { cursor: pointer; }'],
  })
-export class AppComponent {
+export class AppComponent implements OnInit {
 	title = 'TimeTracker';
 
 	private totalTimer : Timer = new Timer();
@@ -63,6 +82,10 @@ export class AppComponent {
 	private emptyTask : Task = new Task('');
 
 	titleFocused : boolean = false;
+
+	public ngOnInit() : any {
+		this.load();
+	}
 
 	select(task: Task) {
 		if (this.selected) {
@@ -77,6 +100,7 @@ export class AppComponent {
 		this.selected = task;
 		task.timer.start();
 		this.totalTimer.start();
+		this.store();
 	}
 
 	newTask() {
@@ -85,5 +109,29 @@ export class AppComponent {
 		this.select(task);
 
 		this.titleFocused = true;
+	}
+
+	private store() {
+		let obj = [];
+		this.tasks.forEach(function(t) {
+			console.log('abc');
+			obj.push(t.serialize());
+		});
+
+		localStorage.setItem('tasks', JSON.stringify(obj));
+	}
+
+	private load() {
+		try {
+			let obj = JSON.parse(localStorage.getItem('tasks'));
+
+			let tasks : Task[] = [];
+			obj.forEach(function(t) {
+				tasks.push(Task.deserialize(t));
+			});
+			this.tasks = tasks;
+		} catch (e) {
+			console.log(e);
+		}
 	}
 }

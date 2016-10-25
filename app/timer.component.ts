@@ -26,6 +26,26 @@ export class Timer {
 		this.isActive = false;
 	}
 
+	public static deserialize(d: any) : Timer {
+		let t = new Timer();
+
+		if (d.trackedTime) {
+			t.trackedTime = d.tarackedTime;
+		}
+
+		if (d.currentStart) {
+			t.currentStart = d.currentStart;
+			t.isActive = true;
+		}
+
+		t.update();
+		return t;
+	}
+
+	public serialize() : Object {
+		return { trackedTime: this.trackedTime, currentStart: this.isActive ? this.currentStart : null };
+	}
+
 	public start() : void {
 		let self = this;
 
