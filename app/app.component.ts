@@ -114,7 +114,6 @@ export class AppComponent implements OnInit {
 	private store() {
 		let obj = [];
 		this.tasks.forEach(function(t) {
-			console.log('abc');
 			obj.push(t.serialize());
 		});
 
@@ -122,12 +121,17 @@ export class AppComponent implements OnInit {
 	}
 
 	private load() {
+		var self = this;
 		try {
 			let obj = JSON.parse(localStorage.getItem('tasks'));
 
 			let tasks : Task[] = [];
+
 			obj.forEach(function(t) {
-				tasks.push(Task.deserialize(t));
+				let nTask = Task.deserialize(t);
+				tasks.push(nTask);
+				if (nTask.timer.isActive)
+					self.select(nTask);
 			});
 			this.tasks = tasks;
 		} catch (e) {

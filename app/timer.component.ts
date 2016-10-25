@@ -29,11 +29,11 @@ export class Timer {
 	public static deserialize(d: any) : Timer {
 		let t = new Timer();
 
-		if (d.trackedTime) {
-			t.trackedTime = d.tarackedTime;
+		if (typeof d.trackedTime === 'number') {
+			t.trackedTime = d.trackedTime;
 		}
 
-		if (d.currentStart) {
+		if (typeof d.currentStart === 'number') {
 			t.currentStart = d.currentStart;
 			t.isActive = true;
 		}
@@ -49,12 +49,12 @@ export class Timer {
 	public start() : void {
 		let self = this;
 
-		if (self.isActive)
-			return;
+		if (!self.isActive) {
+			self.isActive = true;
+			self.currentStart = new Date().getTime();
+		}
 
-		self.isActive = true;
-		self.currentStart = new Date().getTime();
-
+		clearInterval(this._timer);
 		self._timer = setInterval(() => { self.update(); }, 1000);
 	}
 
